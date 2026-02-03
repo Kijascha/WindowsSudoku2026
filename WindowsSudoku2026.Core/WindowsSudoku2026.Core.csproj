@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="SQLite\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WindowsSudoku2026.Common\WindowsSudoku2026.Common.csproj" />
+    <ProjectReference Include="..\WindowsSudoku2026.Solver\WindowsSudoku2026.Solver.csproj" />
+  </ItemGroup>
+
+</Project>

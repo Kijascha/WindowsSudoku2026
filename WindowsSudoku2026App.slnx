@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="WindowsSudoku2026.Common/WindowsSudoku2026.Common.csproj" Id="f49254c8-dc1b-4b33-a320-6b6d067486f7" />
+  <Project Path="WindowsSudoku2026.Core/WindowsSudoku2026.Core.csproj" Id="8ec58c77-c727-4f80-a49a-8824dc9b76bd" />
+  <Project Path="WindowsSudoku2026.Solver/WindowsSudoku2026.Solver.csproj" Id="4b831a6d-9fda-4d1c-bb49-8cf9ef12fcd2" />
+  <Project Path="WindowsSudoku2026/WindowsSudoku2026.csproj" />
+</Solution>

@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="AccentBrush" Color="Purple" />
+    <SolidColorBrush x:Key="HoverBrush" Color="#990099" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#3B003B" />
+    <SolidColorBrush x:Key="BackgroundBrush" Color="White" />
+    <SolidColorBrush x:Key="DisabledBrush" Color="#DDD" />
+
+    <LinearGradientBrush x:Key="SuccessNotificationBrush" StartPoint="0,0" EndPoint="1,1">
+        <!-- Ein kräftiges, tiefes Smaragdgrün für die Lesbarkeit -->
+        <GradientStop Color="#FF00853E" Offset="0.0" />
+        <!-- Ein leuchtendes, aber gesättigtes Mittelgrün -->
+        <GradientStop Color="#FF00B354" Offset="1.0" />
+    </LinearGradientBrush>
+    <!-- Roter Verlauf (Fehler/Warnung) -->
+    <LinearGradientBrush x:Key="ErrorNotificationBrush" StartPoint="0,0" EndPoint="1,1">
+        <!-- Ein tiefes, sattes Dunkelrot -->
+        <GradientStop Color="#FFB00020" Offset="0.0" />
+        <!-- Ein helleres, leuchtendes Signalrot -->
+        <GradientStop Color="#FFF44336" Offset="1.0" />
+    </LinearGradientBrush>
+</ResourceDictionary>

@@ -1,0 +1,264 @@
+﻿<UserControl x:Class="WindowsSudoku2026.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WindowsSudoku2026.Views" 
+             xmlns:components="clr-namespace:WindowsSudoku2026.Components"
+             xmlns:viewmodels="clr-namespace:WindowsSudoku2026.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Button Content="X" 
+                Grid.Row="0"
+                    Style="{DynamicResource CommonButtonStyle}" 
+                    Margin="10" 
+                    Width="30" 
+                    Height="30" 
+                    HorizontalAlignment="Left"
+                    Command="{Binding CloseSettingsCommand}"/>
+        <TextBlock Grid.Row="1" Text="Settings" HorizontalAlignment="Center" Foreground="{DynamicResource AccentBrush}" FontSize="36" Margin="20"/>
+        <ScrollViewer Grid.Row="2" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <Expander Header="General Settings" FontSize="16" Margin="15 5" Style="{DynamicResource ExpanderStyle}" ExpandDirection="Down">
+                    <StackPanel>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #1" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #2" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #3" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #4" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #5" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #6" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #7" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <!-- Default Prefix - DONE -->
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Default Prefix" FontSize="18"/>
+                            <TextBox Grid.Column="1" 
+                                         Width="200" 
+                                         Height="45"
+                                         Text="{Binding DefaultNamingPrefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                         HorizontalContentAlignment="Left" 
+                                         VerticalContentAlignment="Center"
+                                         Padding="4 0"/>
+                        </Grid>
+                    </StackPanel>
+                </Expander>
+                <Expander Header="Play Settings" FontSize="16" Margin="15 5" Style="{DynamicResource ExpanderStyle}" ExpandDirection="Down">
+                    <StackPanel>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #1" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #2" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #3" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #4" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #5" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #6" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #7" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #8" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </Expander>
+                <Expander Header="Create Settings" FontSize="16" Margin="15 5" Style="{DynamicResource ExpanderStyle}" ExpandDirection="Down">
+                    <StackPanel>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #1" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #2" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #3" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #4" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #5" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #6" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #7" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Grid Margin="30 10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Content="Setting #8" FontSize="18"/>
+                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </Expander>
+                <Expander Header="Color Palette Changer" Style="{DynamicResource ExpanderStyle}" FontSize="16" Margin="15 5" ExpandDirection="Down">
+                    <components:ColorPaletteSelection />
+                </Expander>
+                <!-- Der globale Speichern-Button -->
+                <Button Content="Alle Änderungen speichern" 
+                            Command="{Binding UpdateAllSettingsCommand}"
+                            Margin="20" HorizontalAlignment="Center" 
+                            Width="250" Height="50" FontSize="18">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource CommonButtonStyle}">
+                            <!-- Standardmäßig unsichtbar -->
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Style.Triggers>
+                                <!-- Anzeigen, wenn IsDirty true ist -->
+                                <DataTrigger Binding="{Binding IsDirty}" Value="True">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

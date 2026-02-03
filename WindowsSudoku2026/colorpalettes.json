@@ -1,0 +1,128 @@
+[
+  {
+    "Id": "c935b05e-000f-4257-bbdf-af548adbad10",
+    "Name": "Vibrant",
+    "Colors": [
+      {
+        "Key": 1,
+        "Color": "#FFFF6057"
+      },
+      {
+        "Key": 2,
+        "Color": "#FFFFF654"
+      },
+      {
+        "Key": 3,
+        "Color": "#FF5CC8FF"
+      },
+      {
+        "Key": 4,
+        "Color": "#FF70FF42"
+      },
+      {
+        "Key": 5,
+        "Color": "#FFFF7BFC"
+      },
+      {
+        "Key": 6,
+        "Color": "#FFFFB05A"
+      },
+      {
+        "Key": 7,
+        "Color": "#FFDEDEDE"
+      },
+      {
+        "Key": 8,
+        "Color": "#FF9E9E9E"
+      },
+      {
+        "Key": 9,
+        "Color": "#FF454545"
+      }
+    ]
+  },
+  {
+    "Id": "0b0a5887-177b-47a5-b1ce-6cf566c10947",
+    "Name": "Default",
+    "Colors": [
+      {
+        "Key": 1,
+        "Color": "#FFF98987"
+      },
+      {
+        "Key": 2,
+        "Color": "#FFFDF38C"
+      },
+      {
+        "Key": 3,
+        "Color": "#FF8BC2F9"
+      },
+      {
+        "Key": 4,
+        "Color": "#FFD1EFA6"
+      },
+      {
+        "Key": 5,
+        "Color": "#FFF1B0F7"
+      },
+      {
+        "Key": 6,
+        "Color": "#FFEFC084"
+      },
+      {
+        "Key": 7,
+        "Color": "#FFE6E6E6"
+      },
+      {
+        "Key": 8,
+        "Color": "#FFB0B0B0"
+      },
+      {
+        "Key": 9,
+        "Color": "#FF666666"
+      }
+    ]
+  },
+  {
+    "Id": "95e7124b-ab31-4a2f-90b6-fc6369b930b0",
+    "Name": "PurpleBlueGreen",
+    "Colors": [
+      {
+        "Key": 1,
+        "Color": "#FF8E4089"
+      },
+      {
+        "Key": 2,
+        "Color": "#FF37769C"
+      },
+      {
+        "Key": 3,
+        "Color": "#FF57A23A"
+      },
+      {
+        "Key": 4,
+        "Color": "#FFC558BE"
+      },
+      {
+        "Key": 5,
+        "Color": "#FF4799CA"
+      },
+      {
+        "Key": 6,
+        "Color": "#FF70D04B"
+      },
+      {
+        "Key": 7,
+        "Color": "#FFF46EEC"
+      },
+      {
+        "Key": 8,
+        "Color": "#FF59BFFD"
+      },
+      {
+        "Key": 9,
+        "Color": "#FF85F859"
+      }
+    ]
+  }
+]

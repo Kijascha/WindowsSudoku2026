@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WindowsSudoku2026.Common\WindowsSudoku2026.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Backtrack\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+﻿<Application x:Class="WindowsSudoku2026.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:WindowsSudoku2026">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/WindowsSudoku2026.Core;component/Resources/Brushes.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/WindowsSudoku2026;component/Controls/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
