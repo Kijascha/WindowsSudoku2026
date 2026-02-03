@@ -10,19 +10,11 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
-    <None Remove="colorpaletteDB.json" />
-    <None Remove="colorpalettes.json" />
     <None Remove="SudokuDatabase.db" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="colorpaletteDB.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="colorpalettes.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SudokuDatabase.db">
