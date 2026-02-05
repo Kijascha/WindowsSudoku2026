@@ -31,36 +31,13 @@ public partial class Cell : ObservableObject
         _isHighlighted = false;
         _cellColors = new();
     }
-    // Override Equals method
+
     public override bool Equals(object? obj)
-    {
-        // Null check
-        if (obj == null)
-        {
-            return false;
-        }
+        => obj is Cell other && Row == other.Row && Column == other.Column;
 
-        // Reference equality check
-        if (ReferenceEquals(this, obj))
-        {
-            return true;
-        }
-
-        // Type check
-        if (obj.GetType() != typeof(Cell))
-        {
-            return false;
-        }
-
-        // Cast the object to Cell and compare Row and Col
-        var otherCell = (Cell)obj;
-        return this.Row == otherCell.Row && this.Column == otherCell.Column;
-    }
-
-    // Override GetHashCode method
     public override int GetHashCode()
-    {
-        // Use a prime number to combine hash codes for Row and Col
-        return (Row * 397) ^ Column;
-    }
+        => HashCode.Combine(Row, Column);
+
+    public static bool operator ==(Cell? a, Cell? b) => Equals(a, b);
+    public static bool operator !=(Cell? a, Cell? b) => !Equals(a, b);
 }
