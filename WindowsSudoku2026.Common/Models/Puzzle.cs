@@ -116,20 +116,23 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
     #region Validation
     public bool IsValidDigit(int row, int column, int digit)
     {
+        if (digit == 0) return true;
+
+        Cell currentCell = _board[row, column];
         // Nutze die Span-Methoden, die du schon hast!
-        if (ContainsDigit(GetRowSpan(row), digit, column)) return false;
-        if (ContainsDigit(GetColumnSpan(column), digit, row)) return false;
-        if (ContainsDigit(GetBoxSpan(row / 3, column / 3), digit, -1)) return false;
+        if (ContainsDigit(GetRowSpan(row), digit, currentCell)) return false;
+        if (ContainsDigit(GetColumnSpan(column), digit, currentCell)) return false;
+        if (ContainsDigit(GetBoxSpan(row / 3, column / 3), digit, currentCell)) return false;
 
         return true;
     }
 
-    private static bool ContainsDigit(ReadOnlySpan<Cell> unit, int digit, int ignoreIndex)
+    private static bool ContainsDigit(ReadOnlySpan<Cell> unit, int digit, Cell ignoreCell)
     {
-        for (int i = 0; i < unit.Length; i++)
+        foreach (var cell in unit)
         {
             // ignoreIndex wird genutzt, um die aktuelle Zelle selbst zu überspringen
-            if (i != ignoreIndex && unit[i].Digit == digit) return true;
+            if (!cell.Equals(ignoreCell) && cell.Digit == digit) return true;
         }
         return false;
     }
