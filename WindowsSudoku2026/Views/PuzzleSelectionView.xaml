@@ -14,6 +14,7 @@
         <converters:TicksToTimeSpanConverter x:Key="TicksToTimeSpanConverter" />
         <converters:PlayButtonTextConverter x:Key="PlayButtonTextConverter" />
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:SelectedPuzzleToVisibilityConverter x:Key="TestConverter" />
         <converters:BestTimeConverter x:Key="BestTimeConverter" />
         <Style x:Key="ExpandableListBoxItem" TargetType="ListBoxItem">
             <Setter Property="Foreground" Value="#777" />
@@ -105,9 +106,15 @@
                                         Margin="20 0" Focusable="False" 
                                         Width="24" Height="24" 
                                         Background="Transparent" 
-                                        BorderBrush="Transparent" 
+                                        BorderBrush="Transparent"
                                         BorderThickness="0"
                                         Command="{Binding Path=DataContext.DeleteSelectedPuzzleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                        <Button.Visibility>
+                                            <MultiBinding Converter="{StaticResource TestConverter}">
+                                                <Binding Path="DataContext.SelectedPuzzle" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                                <Binding Path="." />
+                                            </MultiBinding>
+                                        </Button.Visibility>
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <Border x:Name="deletePuzzleFrame" Background="Transparent" BorderBrush="Transparent" BorderThickness="0">
