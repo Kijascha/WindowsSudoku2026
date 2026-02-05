@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WindowsSudoku2026.Common.Models;
 using WindowsSudoku2026.Core.Factories;
 using WindowsSudoku2026.Core.ViewModels;
-using WindowsSudoku2026.ViewModels;
 
 namespace WindowsSudoku2026.Services;
 
@@ -15,11 +15,11 @@ public static class ServiceExtension
             services.AddSingleton<Func<TViewModel>>((p) => () => p.GetRequiredService<TViewModel>());
             services.AddSingleton<IAbstractFactory<TViewModel>, AbstractFactory<TViewModel>>();
         }
-        public void AddAbstractValidatorFactory<TViewModel>() where TViewModel : ViewModelValidator
+        public void AddPuzzleFactory<TPuzzle>() where TPuzzle : Puzzle
         {
-            services.AddTransient<TViewModel>();
-            services.AddSingleton<Func<TViewModel>>((p) => () => p.GetRequiredService<TViewModel>());
-            services.AddSingleton<IAbstractFactory<TViewModel>, AbstractFactory<TViewModel>>();
+            services.AddTransient<IPuzzle, TPuzzle>();
+            services.AddSingleton<Func<TPuzzle>>((p) => () => p.GetRequiredService<TPuzzle>());
+            services.AddSingleton<IPuzzleFactory<TPuzzle>, PuzzleFactory<TPuzzle>>();
         }
     }
     extension(IServiceProvider provider)
@@ -28,6 +28,11 @@ public static class ServiceExtension
         where TViewModel : IViewModel
         {
             return provider.GetRequiredService<IAbstractFactory<TViewModel>>();
+        }
+        public IPuzzleFactory<TPuzzle> GetPuzzleFactory<TPuzzle>()
+        where TPuzzle : IPuzzle
+        {
+            return provider.GetRequiredService<IPuzzleFactory<TPuzzle>>();
         }
     }
 }

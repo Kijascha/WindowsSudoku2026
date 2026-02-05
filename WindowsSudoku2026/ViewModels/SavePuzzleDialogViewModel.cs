@@ -5,17 +5,17 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Records;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.Messaging;
 using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.Messaging;
-using WindowsSudoku2026.Services;
 using WindowsSudoku2026.Settings;
 
 namespace WindowsSudoku2026.ViewModels;
 
 public partial class SavePuzzleDialogViewModel : ViewModel, IRecipient<GenericSettingsChangedMessage<UserSettings>>
 {
-    [ObservableProperty] private IGameService _gameService;
+    [ObservableProperty] private IGameServiceV2 _gameServiceV2;
     [ObservableProperty] private string _puzzleName;
 
     [ObservableProperty] private bool _useAutoNaming;
@@ -27,11 +27,11 @@ public partial class SavePuzzleDialogViewModel : ViewModel, IRecipient<GenericSe
     private bool _isSaving;
 
     public SavePuzzleDialogViewModel(
-        IGameService gameService,
+        IGameServiceV2 gameServiceV2,
         IOptionsMonitor<UserSettings> settingsMonitor,
         INavigationService navigationService)
     {
-        _gameService = gameService;
+        _gameServiceV2 = gameServiceV2;
         _navigationService = navigationService;
         _puzzleName = string.Empty;
 
@@ -64,9 +64,11 @@ public partial class SavePuzzleDialogViewModel : ViewModel, IRecipient<GenericSe
             if (bitmap != null)
             {
                 // Jetzt erst das Bild dem Puzzle zuweisen
-                GameService.CurrentPuzzle.PreviewImage = bitmap;
+                GameServiceV2.CurrentPuzzle?.PreviewImage = bitmap;
+                GameServiceV2.CurrentPuzzle?.IsSolved = false;
                 // Und jetzt sicher speichern
-                var success = await GameService.SaveNewCustomPuzzleAsync(UseAutoNaming, AlwaysAppendAutoSuffix, DefaultNamingPrefix, SelectedNamingStrategy);
+                var success = await GameServiceV2.CreateAndSaveNewPuzzle(UseAutoNaming, AlwaysAppendAutoSuffix, DefaultNamingPrefix, SelectedNamingStrategy);
+                //var success = await GameService.SaveNewCustomPuzzleAsync(UseAutoNaming, AlwaysAppendAutoSuffix, DefaultNamingPrefix, SelectedNamingStrategy);
 
                 // TODO: Eine Art von Benachrichtigugn dass das Puzzle erfolgreich gespeichert wurde.
                 if (success)

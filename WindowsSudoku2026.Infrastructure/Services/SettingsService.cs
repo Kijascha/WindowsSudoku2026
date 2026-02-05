@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using WindowsSudoku2026.Core.Interfaces;
 
-namespace WindowsSudoku2026.Services;
+namespace WindowsSudoku2026.Infrastructure.Services;
 
-public class SettingsService(IJsonService jsonService, IConfiguration configuration) : JsonServiceBase(jsonService, configuration), ISettingsService
+public class SettingsService(IJsonService jsonService) : ISettingsService
 {
     /// <summary>
     /// Speichert ein komplettes Settings-Objekt (überschreibt die Sektion).
@@ -11,17 +11,14 @@ public class SettingsService(IJsonService jsonService, IConfiguration configurat
     {
         // 1. Aktuelle Datei laden (Read-Modify-Write), um andere Sektionen nicht zu löschen
         // Wir nutzen ein Dictionary, um flexibel auf den sectionName zuzugreifen
-        var fileContent = _jsonService.LoadAll<Dictionary<string, object>>(filePath)
+        var fileContent = jsonService.LoadAll<Dictionary<string, object>>(filePath)
                           ?? new Dictionary<string, object>();
 
         // 2. Die spezifische Sektion aktualisieren oder hinzufügen
         fileContent[sectionName] = settings;
 
         // 3. Zurückschreiben
-        _jsonService.SaveAll(filePath, fileContent);
-
-        // 4. System benachrichtigen
-        //NotifyChange(settings);
+        jsonService.SaveAll(filePath, fileContent);
     }
 
     /// <summary>
@@ -31,7 +28,7 @@ public class SettingsService(IJsonService jsonService, IConfiguration configurat
     public void UpdateSettings<T>(string filePath, string sectionName, Action<T> updateAction) where T : class, new()
     {
         // 1. Datei laden
-        var fileContent = _jsonService.LoadAll<Dictionary<string, object>>(filePath)
+        var fileContent = jsonService.LoadAll<Dictionary<string, object>>(filePath)
                           ?? new Dictionary<string, object>();
 
         T settings;
@@ -54,9 +51,7 @@ public class SettingsService(IJsonService jsonService, IConfiguration configurat
 
         // 4. In das Dictionary zurückschreiben und Datei speichern
         fileContent[sectionName] = settings;
-        _jsonService.SaveAll(filePath, fileContent);
+        jsonService.SaveAll(filePath, fileContent);
 
-        // 5. Systemweit benachrichtigen (Reload & Messenger)
-        //NotifyChange(settings);
     }
 }

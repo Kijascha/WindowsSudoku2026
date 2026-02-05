@@ -9,6 +9,7 @@ using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Records;
 using WindowsSudoku2026.Common.Utils.Colors;
 using WindowsSudoku2026.Core.Helpers;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.DTO;
 using WindowsSudoku2026.Messaging;
@@ -17,10 +18,8 @@ using WindowsSudoku2026.Settings;
 
 namespace WindowsSudoku2026.ViewModels;
 
-public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMessage>
+public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMessage>, IRecipient<PuzzleSelectedMessage>
 {
-
-    [ObservableProperty] IGameService _gameService;
     [ObservableProperty] private ModifierKeys _activeModifiers;
     [ObservableProperty] private InputActionType _selectedInputActionType;
     [ObservableProperty] private GameType _gameMode;
@@ -30,16 +29,18 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
     [ObservableProperty] private bool _isLocked;
     private INavigationService _navigationService;
     private InputActionType _baseInputActionType;
-    private IColorPaletteService _colorPaletteService;
+    private IColorPaletteRepository _colorPaletteService;
     private IOptionsMonitor<UserSettings> _userOptionsMonitor;
 
+    public IGameServiceV2 GameServiceV2 { get; }
+
     public PlayViewModel(
-        IGameService gameService,
+        IGameServiceV2 gameServiceV2,
         INavigationService navigationService,
         IOptionsMonitor<UserSettings> userOptionsMonitor,
-        IColorPaletteService colorPaletteService)
+        IColorPaletteRepository colorPaletteService)
     {
-        _gameService = gameService;
+        GameServiceV2 = gameServiceV2;
         _navigationService = navigationService;
         _userOptionsMonitor = userOptionsMonitor;
         _colorPaletteService = colorPaletteService;
@@ -49,11 +50,12 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
         _baseInputActionType = InputActionType.Digits;
         _visibilityState = Visibility.Collapsed;
         _activePalette = ColorPaletteFactory.CreateDefaultPalette();
-        _gameService.CurrentPuzzle.ActivePalette = _activePalette;
+        GameServiceV2.CurrentPuzzle?.ActivePalette = _activePalette;
         IsLocked = false;
 
         // 2. Auf Live-Änderungen abonnieren
         WeakReferenceMessenger.Default.Register<ColorPaletteChangedMessage>(this);
+        WeakReferenceMessenger.Default.Register<PuzzleSelectedMessage>(this);
 
         // Im Konstruktor oder einer Init-Methode des PlayViewModels
         _navigationService.PropertyChanged += (s, e) =>
@@ -63,13 +65,13 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
                 if (_navigationService.CurrentViewModel is PlayViewModel)
                 {
                     // Timer fortsetzen
-                    if (!GameService.CurrentPuzzle.IsSolved)
-                        GameService.Timer.Start(GameService.CurrentPuzzle?.TimeSpent ?? TimeSpan.Zero);
+                    if (GameServiceV2.CurrentPuzzle != null && !GameServiceV2.CurrentPuzzle.IsSolved)
+                        GameServiceV2.Timer.Start(GameServiceV2.CurrentPuzzle?.TimeSpent ?? TimeSpan.Zero);
                 }
                 else
                 {
                     // Timer pausieren und Zeit im Model sichern, wenn wir die View verlassen
-                    GameService.Timer.Pause();
+                    GameServiceV2.Timer.Pause();
                     // Hier der Fire-and-Forget Aufruf
                     _ = SaveProgressAndHandleErrorsAsync();
                 }
@@ -79,16 +81,27 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
         _ = UpdateActivePalette(_userOptionsMonitor.CurrentValue.ActiveColorPaletteId);
 
     }
+
+    public void Receive(PuzzleSelectedMessage message)
+    {
+        GameServiceV2.Timer.Pause();
+        GameServiceV2.Timer.Reset();
+
+        var newPuzzle = DtoMapper.MapFromDto(message.SelectedPuzzle);
+        GameServiceV2.CurrentPuzzle = newPuzzle.Clone();
+
+        GameServiceV2.Timer.Start(newPuzzle.TimeSpent);
+    }
     // Separate Methode zur Kapselung der Asynchronität
     private async Task SaveProgressAndHandleErrorsAsync()
     {
         try
         {
             // Nutzt die neue Methode im GameService (siehe vorherige Antwort)
-            await GameService.SaveCurrentPuzzleProgressAsync();
-            var result = await GameService.GetAvailablePuzzlesAsync();
+            await GameServiceV2.SyncAndSaveCurrentProgressAsync();
+            var result = await GameServiceV2.GetAvailablePuzzlesAsync();
             if (result != null)
-                WeakReferenceMessenger.Default.Send(new PuzzleStateUpdatedMessage(result));
+                WeakReferenceMessenger.Default.Send(new PuzzleStateUpdatedMessage([.. result]));
         }
         catch (Exception ex)
         {
@@ -110,13 +123,10 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
             ColorPalette? palette = DtoMapper.MapFromDto(result);
 
             // Erst das Modell im Hintergrunddienst setzen
-            GameService.CurrentPuzzle.ActivePalette = palette;
+            GameServiceV2.CurrentPuzzle?.ActivePalette = palette;
 
             // Dann die Property setzen - triggert NotifyPropertyChanged
             ActivePalette = palette;
-
-            // WICHTIG: Manchmal braucht das MultiBinding einen "Anstoß" für den DataContext
-            //OnPropertyChanged(nameof(ActivePalette));
         }
     }
 
@@ -129,7 +139,7 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
 
         if (isFilled)
         {
-            var finished = await GameService.VerifyAndFinishPuzzle();
+            var finished = await GameServiceV2.VerifyAndFinishPuzzle();
 
             if (finished)
             {
@@ -175,7 +185,7 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
         }
     }
     [RelayCommand]
-    private void GoBack() => _navigationService.NavigateTo<ChooseCustomPuzzleViewModel>();
+    private void GoBack() => _navigationService.GoBack();
     [RelayCommand]
     private void ToggleSettings()
     {
@@ -196,13 +206,13 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
     [RelayCommand]
     private void UpdateRemovals()
     {
-        if (!GameService.CurrentPuzzle.IsSolved)
-            GameService.SmartRemovalFromSelected();
+        if (GameServiceV2.CurrentPuzzle != null && !GameServiceV2.CurrentPuzzle.IsSolved)
+            GameServiceV2.PuzzleCommandService.SmartRemovalFromSelected(GameServiceV2.CurrentPuzzle, GameType.Play);
     }
     [RelayCommand]
     private async Task CheckSolvability()
     {
-        if (GameService.IsPuzzleSolvable())
+        if (GameServiceV2.IsPuzzleSolvable())
         {
             await PopupNotification("Everything looks fine so far!", NotificationType.Success);
         }
@@ -220,17 +230,22 @@ public partial class PlayViewModel : ViewModel, IRecipient<ColorPaletteChangedMe
         switch (SelectedInputActionType)
         {
             case InputActionType.Digits:
-                GameService.UpdateDigits(parsedDigit);
-                IsFilled = InputActionHelper.IsFilledOnInputAction(GameService.CurrentPuzzle, SelectedInputActionType, GameMode);
+                GameServiceV2.PuzzleCommandService.UpdateDigits(GameServiceV2.CurrentPuzzle, parsedDigit);
+
+                if (GameServiceV2.CurrentPuzzle == null)
+                    IsFilled = false;
+                else
+                    IsFilled = InputActionHelper.IsFilledOnInputAction(GameServiceV2.CurrentPuzzle, SelectedInputActionType, GameMode);
+
                 break;
 
             case InputActionType.CenterCandidates:
             case InputActionType.CornerCandidates:
-                GameService.UpdateCandidates(parsedDigit, SelectedInputActionType);
+                GameServiceV2.PuzzleCommandService.UpdateCandidates(GameServiceV2.CurrentPuzzle, parsedDigit, SelectedInputActionType);
                 break;
 
             case InputActionType.Colors:
-                GameService.UpdateColors(parsedDigit);
+                GameServiceV2.PuzzleCommandService.UpdateColors(GameServiceV2.CurrentPuzzle, parsedDigit);
                 break;
         }
     }

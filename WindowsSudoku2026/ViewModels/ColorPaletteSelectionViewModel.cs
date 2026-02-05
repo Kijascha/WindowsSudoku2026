@@ -6,11 +6,11 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using WindowsSudoku2026.Common.DTO;
 using WindowsSudoku2026.Common.Utils.Colors;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.DTO;
 using WindowsSudoku2026.Essential;
 using WindowsSudoku2026.Messaging;
-using WindowsSudoku2026.Services;
 using WindowsSudoku2026.Settings;
 
 namespace WindowsSudoku2026.ViewModels;
@@ -20,7 +20,7 @@ public partial class ColorPaletteSelectionViewModel : ViewModel, IRecipient<Colo
     private Color _receivedColor;
 
     private readonly IAppPaths _appPaths;
-    private readonly IColorPaletteService _colorPaletteService;
+    private readonly IColorPaletteRepository _colorPaletteRepo;
     private readonly IOptionsMonitor<UserSettings> _optionsMonitor;
     private readonly ISettingsService _settingsService;
 
@@ -32,12 +32,12 @@ public partial class ColorPaletteSelectionViewModel : ViewModel, IRecipient<Colo
 
     public ColorPaletteSelectionViewModel(
         IAppPaths appPaths,
-        IColorPaletteService colorPaletteService,
+        IColorPaletteRepository colorPaletteRepo,
         IOptionsMonitor<UserSettings> optionsMonitor,
         ISettingsService settingsService)
     {
         _appPaths = appPaths;
-        _colorPaletteService = colorPaletteService;
+        _colorPaletteRepo = colorPaletteRepo;
         _optionsMonitor = optionsMonitor;
         _settingsService = settingsService;
 
@@ -79,13 +79,13 @@ public partial class ColorPaletteSelectionViewModel : ViewModel, IRecipient<Colo
     }
     private async Task UpdateAvailablePalettes()
     {
-        var result = await _colorPaletteService.GetAllColorPaletteDtos();
+        var result = await _colorPaletteRepo.GetAllColorPaletteDtos();
         AvailablePalettes = [.. result];
     }
     [RelayCommand]
     private async Task NewPalette()
     {
-        var result = await _colorPaletteService.SavePaletteDto(DtoMapper.MapToDto(ColorPaletteFactory.CreateDefaultPalette()));
+        var result = await _colorPaletteRepo.SavePaletteDto(DtoMapper.MapToDto(ColorPaletteFactory.CreateDefaultPalette()));
 
         await UpdateAvailablePalettes();
 
@@ -99,7 +99,7 @@ public partial class ColorPaletteSelectionViewModel : ViewModel, IRecipient<Colo
         if (ActiveColorPalette == null) return;
 
         // 1. Speichern via Service
-        await _colorPaletteService.UpdatePalette(DtoMapper.MapToDto(ActiveColorPalette));
+        await _colorPaletteRepo.UpdatePalette(DtoMapper.MapToDto(ActiveColorPalette));
 
         // 2. Zustand zurücksetzen
         IsDirty = false;
@@ -115,7 +115,7 @@ public partial class ColorPaletteSelectionViewModel : ViewModel, IRecipient<Colo
         if (SelectedPalette == null) return;
 
         // 1. Löschen im Service
-        await _colorPaletteService.DeletePalette(SelectedPalette.Id);
+        await _colorPaletteRepo.DeletePalette(SelectedPalette.Id);
 
         // 2. Liste aktualisieren
         await UpdateAvailablePalettes();

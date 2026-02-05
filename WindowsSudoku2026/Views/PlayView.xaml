@@ -37,7 +37,7 @@
                     IsLocked="{Binding IsLocked}"
                     InputActionType="{Binding SelectedInputActionType, Mode=TwoWay}"
                     ActiveModifiers="{Binding ActiveModifiers, Mode=TwoWay}" 
-                    Puzzle="{Binding GameService.CurrentPuzzle, UpdateSourceTrigger=PropertyChanged}"
+                    Puzzle="{Binding GameServiceV2.CurrentPuzzle, UpdateSourceTrigger=PropertyChanged}"
                     DigitInputAsIntCommand="{Binding UpdateButtonCommand}" 
                     Focusable="True"/>
         </Border>

@@ -1,6 +1,4 @@
-﻿using WindowsSudoku2026.Essential;
-
-namespace WindowsSudoku2026.Services;
+﻿namespace WindowsSudoku2026.Core.Interfaces;
 
 public interface IDtoJsonService
 {

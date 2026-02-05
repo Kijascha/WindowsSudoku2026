@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
-using WindowsSudoku2026.Services;
 
 namespace WindowsSudoku2026.ViewModels;
 

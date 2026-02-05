@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Threading;
+using WindowsSudoku2026.Core.Interfaces;
 
 namespace WindowsSudoku2026.Services
 {

@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
+using WindowsSudoku2026.Core.Interfaces;
 
-namespace WindowsSudoku2026.Services;
+namespace WindowsSudoku2026.Infrastructure.Services;
 
 public class JsonService : IJsonService
 {

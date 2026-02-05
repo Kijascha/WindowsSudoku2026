@@ -35,7 +35,7 @@
                                          SelectionBrush="Purple" 
                                          GameMode="{Binding GameMode}"
                                          IsSolverMode="False"
-                                         Puzzle="{Binding GameService.CurrentPuzzle, Mode=TwoWay}" 
+                                         Puzzle="{Binding GameServiceV2.CurrentPuzzle, Mode=TwoWay}" 
                                          DigitInputAsIntCommand="{Binding UpdateButtonCommand}" 
                                          Focusable="True" />
         </Border>

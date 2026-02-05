@@ -36,7 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WindowsSudoku2026.Common\WindowsSudoku2026.Common.csproj" />
     <ProjectReference Include="..\WindowsSudoku2026.Core\WindowsSudoku2026.Core.csproj" />
-    <ProjectReference Include="..\WindowsSudoku2026.Solver\WindowsSudoku2026.Solver.csproj" />
+    <ProjectReference Include="..\WindowsSudoku2026.Infrastructure\WindowsSudoku2026.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

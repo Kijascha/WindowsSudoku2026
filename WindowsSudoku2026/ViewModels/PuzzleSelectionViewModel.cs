@@ -6,27 +6,29 @@ using System.Windows.Media.Imaging;
 using WindowsSudoku2026.Common.DTO;
 using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Records;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.DTO;
 using WindowsSudoku2026.Messaging;
-using WindowsSudoku2026.Services;
 
 namespace WindowsSudoku2026.ViewModels;
 
 public partial class PuzzleSelectionViewModel : ViewModel, IRecipient<PuzzleDatabaseChangedMessage>, IRecipient<PuzzleStateUpdatedMessage>
 {
     private readonly INavigationService _navigationService;
-    [ObservableProperty] private IGameService _gameService;
     [ObservableProperty] private ObservableCollection<PuzzleDTO> _puzzles = [];
     [ObservableProperty][NotifyCanExecuteChangedFor(nameof(GoToPlayPuzzleCommand))] private PuzzleDTO? _selectedPuzzle; // Bindung an ListBox.SelectedItem
     [ObservableProperty] private BitmapSource? _selectedPreviewImage;
 
     public bool HasPuzzleProgress { get => SelectedPuzzle?.TimeSpentTicks > 0; }
-    public PuzzleSelectionViewModel(INavigationService navigationService, IGameService gameService)
+    public IGameServiceV2 GameServiceV2 { get; }
+
+    public PuzzleSelectionViewModel(
+        INavigationService navigationService,
+        IGameServiceV2 gameServiceV2)
     {
         _navigationService = navigationService;
-        _gameService = gameService;
-
+        GameServiceV2 = gameServiceV2;
         _selectedPreviewImage = null;
 
         WeakReferenceMessenger.Default.Register<PuzzleStateUpdatedMessage>(this);
@@ -36,13 +38,8 @@ public partial class PuzzleSelectionViewModel : ViewModel, IRecipient<PuzzleData
 
     private async Task LoadPuzzlesAsync()
     {
-        // Hole die Daten asynchron vom Service
-        var loadedPuzzles = await GameService.GetAvailablePuzzlesAsync();
-
-        // Da wir uns im ViewModel befinden, sorgt das PropertyChanged-Event 
-        // der [ObservableProperty] dafür, dass die ListBox sich aktualisiert, 
-        // sobald die Daten da sind.
-        Puzzles = loadedPuzzles;
+        var loadedPuzzles = await GameServiceV2.GetAvailablePuzzlesAsync();
+        Puzzles = [.. loadedPuzzles];
     }
     partial void OnSelectedPuzzleChanged(PuzzleDTO? value)
     {
@@ -59,8 +56,8 @@ public partial class PuzzleSelectionViewModel : ViewModel, IRecipient<PuzzleData
         if (SelectedPuzzle != null)
         {
             // Direktes Laden im Service
-            WeakReferenceMessenger.Default.Send(new PuzzleSelectedMessage(SelectedPuzzle));
             _navigationService.NavigateTo<PlayViewModel>();
+            WeakReferenceMessenger.Default.Send(new PuzzleSelectedMessage(SelectedPuzzle));
         }
     }
     // Die CanExecute-Methode stellt sicher, dass der Button nur bei Auswahl aktiv ist
@@ -78,12 +75,12 @@ public partial class PuzzleSelectionViewModel : ViewModel, IRecipient<PuzzleData
     {
         if (SelectedPuzzle != null)
         {
-            var resettedPuzzle = await GameService.ResetCurrentPuzzleAsync(DtoMapper.MapFromDto(SelectedPuzzle));
+            var resettedPuzzle = await GameServiceV2.ResetCurrentPuzzleAsync(DtoMapper.MapFromDto(SelectedPuzzle));
 
             if (resettedPuzzle == null) return;
             // Direktes Laden im Service
-            WeakReferenceMessenger.Default.Send(new PuzzleSelectedMessage(resettedPuzzle));
             _navigationService.NavigateTo<PlayViewModel>();
+            WeakReferenceMessenger.Default.Send(new PuzzleSelectedMessage(resettedPuzzle));
         }
     }
     [RelayCommand]
@@ -97,7 +94,7 @@ public partial class PuzzleSelectionViewModel : ViewModel, IRecipient<PuzzleData
         try
         {
             // 1. Aus der Datenbank löschen (via generischer Methode)
-            await GameService.DeletePuzzleAsync(SelectedPuzzle.Id);
+            await GameServiceV2.DeletePuzzleAsync(SelectedPuzzle);
 
             // 2. Aus der UI-Liste entfernen
             Puzzles.Remove(SelectedPuzzle);

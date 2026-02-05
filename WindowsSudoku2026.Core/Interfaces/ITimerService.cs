@@ -1,4 +1,4 @@
-﻿namespace WindowsSudoku2026.Services;
+﻿namespace WindowsSudoku2026.Core.Interfaces;
 
 public interface ITimerService
 {

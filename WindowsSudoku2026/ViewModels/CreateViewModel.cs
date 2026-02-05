@@ -3,30 +3,37 @@ using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Models;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
-using WindowsSudoku2026.Services;
 
 namespace WindowsSudoku2026.ViewModels;
 
 public partial class CreateViewModel : ViewModel
 {
-
-    [ObservableProperty] IGameService _gameService;
+    [ObservableProperty] private IGameServiceV2 _gameServiceV2;
     [ObservableProperty] private InputActionType _selectedInputActionType;
     [ObservableProperty] private GameType _gameMode;
     [ObservableProperty] private Visibility _visibilityState;
 
     private INavigationService _navigationService;
 
-    public CreateViewModel(IGameService gameService, INavigationService navigationService)
+    public IPuzzleCommandService CommandService { get; }
+
+    public CreateViewModel(
+        IGameServiceV2 gameServiceV2,
+        IPuzzleCommandService commandService,
+        IPuzzle puzzle,
+        INavigationService navigationService)
     {
-        _gameService = gameService;
+        _gameServiceV2 = gameServiceV2;
+        CommandService = commandService;
         _navigationService = navigationService;
         _selectedInputActionType = InputActionType.Digits;
         _visibilityState = Visibility.Collapsed;
         _gameMode = GameType.Create;
-        _gameService.CurrentPuzzle = new Puzzle();
+        _gameServiceV2.CurrentPuzzle = puzzle;
     }
+
     [RelayCommand]
     private void GoBack() => _navigationService.NavigateTo<MenuViewModel>();
 
@@ -57,14 +64,14 @@ public partial class CreateViewModel : ViewModel
     [RelayCommand]
     private void UpdateRemovals()
     {
-        GameService.SmartRemovalFromSelected();
+        GameServiceV2.PuzzleCommandService.SmartRemovalFromSelected(GameServiceV2.CurrentPuzzle, GameType.Create);
     }
     [RelayCommand]
     private void UpdateButton(string digit)
     {
         if (!int.TryParse(digit, out int parsedDigit)) return;
 
-        GameService.UpdateDigits(parsedDigit, GameType.Create);
+        GameServiceV2.PuzzleCommandService.UpdateDigits(GameServiceV2.CurrentPuzzle, parsedDigit, GameType.Create);
     }
 
     [RelayCommand]

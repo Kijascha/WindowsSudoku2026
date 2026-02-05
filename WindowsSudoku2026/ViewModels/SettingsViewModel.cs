@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Options;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.Essential;
-using WindowsSudoku2026.Services;
 using WindowsSudoku2026.Settings;
 
 namespace WindowsSudoku2026.ViewModels;

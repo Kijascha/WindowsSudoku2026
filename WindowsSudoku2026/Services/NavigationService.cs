@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
+using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
-using WindowsSudoku2026.ViewModels;
 
 namespace WindowsSudoku2026.Services;
 
@@ -28,11 +27,6 @@ public partial class NavigationService(IServiceProvider provider) : ObservableOb
         {
             _history.Push(CurrentViewModel);
             HistoryCount = _history.Count;
-        }
-
-        if (typeof(TViewModel) == typeof(CreateViewModel))
-        {
-            provider.GetRequiredService<IGameService>().CreateNewPuzzle();
         }
 
         CurrentViewModel = provider.GetAbstractFactory<TViewModel>().Create();

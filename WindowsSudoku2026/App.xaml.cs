@@ -3,7 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Windows;
+using WindowsSudoku2026.Common.Models;
+using WindowsSudoku2026.Core.Interfaces;
+using WindowsSudoku2026.Core.Services;
 using WindowsSudoku2026.Essential;
+using WindowsSudoku2026.Infrastructure.Services;
 using WindowsSudoku2026.Services;
 using WindowsSudoku2026.Settings;
 using WindowsSudoku2026.ViewModels;
@@ -42,15 +46,20 @@ namespace WindowsSudoku2026
 
                     services.AddSingleton<IOptionsMonitor<UserSettings>, OptionsMonitor<UserSettings>>();
                     services.AddSingleton<IAppPaths, AppPaths>();
-                    services.AddSingleton<ISQLiteService, SQLiteService>();
-                    services.AddSingleton<IDtoSqlService, DtoSqlService>();
+                    //services.AddSingleton<ISQLiteService, SQLiteService>();
+                    //services.AddSingleton<IDtoSqlService, DtoSqlService>();
                     services.AddSingleton<ITimerService, TimerService>();
-                    services.AddSingleton<ISettingsService, SettingsService>();
-                    services.AddSingleton<IJsonService, JsonService>();
-                    services.AddSingleton<IDtoJsonService, DtoJsonService>();
-                    services.AddSingleton<IColorPaletteService, ColorPaletteService>();
-                    services.AddSingleton<IGameService, GameService>();
+                    //services.AddSingleton<ISettingsService, SettingsService>();
+                    //services.AddSingleton<IJsonService, JsonService>();
+                    //services.AddSingleton<IDtoJsonService, DtoJsonService>();
+                    //services.AddSingleton<IColorPaletteService, ColorPaletteService>();
+                    //services.AddSingleton<IGameService, GameService>();
                     services.AddSingleton<INavigationService, NavigationService>();
+
+                    services.AddPuzzleFactory<Puzzle>();
+
+                    services.AddInfrastucture();
+                    services.AddCoreServices();
 
                     services.AddAbstractFactory<ColorPickerViewModel>();
                     services.AddAbstractFactory<SettingsViewModel>();

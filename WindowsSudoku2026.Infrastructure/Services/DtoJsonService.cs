@@ -1,14 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
-using WindowsSudoku2026.Essential;
+﻿using WindowsSudoku2026.Core.Interfaces;
 
-namespace WindowsSudoku2026.Services;
+namespace WindowsSudoku2026.Infrastructure.Services;
 
-public class DtoJsonService(IJsonService jsonService, IConfiguration configuration) : JsonServiceBase(jsonService, configuration), IDtoJsonService
+public class DtoJsonService(IJsonService jsonService) : IDtoJsonService
 {
     public bool SaveDto<TDto>(string filePath, TDto data, Func<List<TDto>, TDto, bool> validationFunc) where TDto : class
     {
         // 1. Laden oder neue Liste erstellen, falls Datei fehlt
-        var existingData = _jsonService.LoadAll<List<TDto>>(filePath) ?? new List<TDto>();
+        var existingData = jsonService.LoadAll<List<TDto>>(filePath) ?? new List<TDto>();
 
         // 2. Validierung via Delegate
         // Die validationFunc sollte 'true' zurückgeben, wenn alles okay ist
@@ -17,16 +16,15 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
 
         // 3. Hinzufügen und Speichern
         existingData.Add(data);
-        _jsonService.SaveAll(filePath, existingData);
+        jsonService.SaveAll(filePath, existingData);
 
-        NotifyChange(data);
         return true;
     }
     public List<TDto> GetAllDtos<TDto>(string filePath)
     {
         // Wenn die Datei nicht existiert, geben wir eine leere Liste zurück, 
         // damit der Aufrufer (z.B. UI) direkt damit arbeiten kann (kein null-Check nötig).
-        return _jsonService.LoadAll<List<TDto>>(filePath) ?? new List<TDto>();
+        return jsonService.LoadAll<List<TDto>>(filePath) ?? new List<TDto>();
     }
     public TDto? GetDto<TDto>(string filePath, Func<TDto, bool> predicate)
     {
@@ -37,7 +35,7 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
     }
     public bool UpdateDto<TDto>(string filePath, TDto data, Func<TDto, bool> findPredicate) where TDto : class
     {
-        var existingData = _jsonService.LoadAll<List<TDto>>(filePath) ?? new List<TDto>();
+        var existingData = jsonService.LoadAll<List<TDto>>(filePath) ?? new List<TDto>();
 
         // 1. Den Index des vorhandenen Eintrags finden
         int index = existingData.FindIndex(new Predicate<TDto>(findPredicate));
@@ -48,9 +46,8 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
         existingData[index] = data;
 
         // 3. Die aktualisierte Liste speichern
-        _jsonService.SaveAll(filePath, existingData);
+        jsonService.SaveAll(filePath, existingData);
 
-        NotifyChange(data);
         return true;
     }
     public bool SaveDtoInSettings<TContainer, TDto>(
@@ -62,7 +59,7 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
     where TDto : class
     {
         // 1. Gesamte Datei als Dictionary laden
-        var fileContent = _jsonService.LoadAll<Dictionary<string, TContainer>>(filePath)
+        var fileContent = jsonService.LoadAll<Dictionary<string, TContainer>>(filePath)
                           ?? new Dictionary<string, TContainer>();
 
         if (!fileContent.TryGetValue(sectionName, out var container))
@@ -79,9 +76,8 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
 
         // 4. Speichern
         fileContent[sectionName] = container;
-        _jsonService.SaveAll(filePath, fileContent);
+        jsonService.SaveAll(filePath, fileContent);
 
-        NotifyChange(container);
         return true;
     }
     public bool UpdateDtoInSettings<TContainer, TDto>(
@@ -93,7 +89,7 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
     where TDto : class
     {
         // 1. Gesamte Datei als Dictionary laden, um den Root-Knoten zu erhalten
-        var fileContent = _jsonService.LoadAll<Dictionary<string, TContainer>>(filePath)
+        var fileContent = jsonService.LoadAll<Dictionary<string, TContainer>>(filePath)
                           ?? new Dictionary<string, TContainer>();
 
         // 2. Die Sektion (z.B. "ColorPaletteSettings") suchen
@@ -111,10 +107,8 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
 
         // 5. Die gesamte Struktur (inkl. ActivePaletteId) zurückschreiben
         fileContent[sectionName] = container;
-        _jsonService.SaveAll(filePath, fileContent);
+        jsonService.SaveAll(filePath, fileContent);
 
-        // 6. Messenger und Configuration Reload triggern
-        NotifyChange(data);
         return true;
     }
     public bool DeleteDtoFromSettings<TContainer, TDto>(
@@ -125,7 +119,7 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
     where TDto : class
     {
         // 1. Gesamte Datei laden
-        var fileContent = _jsonService.LoadAll<Dictionary<string, TContainer>>(filePath)
+        var fileContent = jsonService.LoadAll<Dictionary<string, TContainer>>(filePath)
                           ?? new Dictionary<string, TContainer>();
 
         // 2. Sektion suchen
@@ -146,10 +140,8 @@ public class DtoJsonService(IJsonService jsonService, IConfiguration configurati
 
         // 5. Struktur aktualisieren und speichern
         fileContent[sectionName] = container;
-        _jsonService.SaveAll(filePath, fileContent);
+        jsonService.SaveAll(filePath, fileContent);
 
-        // 6. Messenger triggern (optional: spezielles Delete-Signal oder null)
-        NotifyChange(deletedItem);
         return true;
     }
 }

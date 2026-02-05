@@ -31,7 +31,6 @@ public partial class Cell : ObservableObject
         _isHighlighted = false;
         _cellColors = new();
     }
-
     // Override Equals method
     public override bool Equals(object? obj)
     {
