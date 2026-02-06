@@ -5,11 +5,11 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Records;
+using WindowsSudoku2026.Common.Settings;
 using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.Messaging;
 using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.Messaging;
-using WindowsSudoku2026.Settings;
 
 namespace WindowsSudoku2026.ViewModels;
 

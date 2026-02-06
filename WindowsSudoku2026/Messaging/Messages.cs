@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging.Messages;
 using System.Collections.ObjectModel;
 using WindowsSudoku2026.Common.DTO;
-using WindowsSudoku2026.Settings;
+using WindowsSudoku2026.Common.Settings;
 
 namespace WindowsSudoku2026.Messaging
 {

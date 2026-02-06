@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Records;
+using WindowsSudoku2026.Common.Settings;
 using WindowsSudoku2026.Common.Utils.Colors;
 using WindowsSudoku2026.Core.Helpers;
 using WindowsSudoku2026.Core.Interfaces;
@@ -14,7 +15,6 @@ using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.DTO;
 using WindowsSudoku2026.Messaging;
 using WindowsSudoku2026.Services;
-using WindowsSudoku2026.Settings;
 
 namespace WindowsSudoku2026.ViewModels;
 

@@ -4,12 +4,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System.Windows;
 using WindowsSudoku2026.Common.Models;
+using WindowsSudoku2026.Common.Settings;
 using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.Services;
 using WindowsSudoku2026.Essential;
 using WindowsSudoku2026.Infrastructure.Services;
 using WindowsSudoku2026.Services;
-using WindowsSudoku2026.Settings;
 using WindowsSudoku2026.ViewModels;
 using WindowsSudoku2026.Views;
 

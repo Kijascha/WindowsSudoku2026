@@ -5,13 +5,13 @@ using Microsoft.Extensions.Options;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using WindowsSudoku2026.Common.DTO;
+using WindowsSudoku2026.Common.Settings;
 using WindowsSudoku2026.Common.Utils.Colors;
 using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
 using WindowsSudoku2026.DTO;
 using WindowsSudoku2026.Essential;
 using WindowsSudoku2026.Messaging;
-using WindowsSudoku2026.Settings;
 
 namespace WindowsSudoku2026.ViewModels;
 
