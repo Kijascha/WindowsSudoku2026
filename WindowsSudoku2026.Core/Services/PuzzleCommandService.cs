@@ -180,6 +180,8 @@ public class PuzzleCommandService : IPuzzleCommandService
             }
         }
 
+        SudokuValidationService.ValidateMove(currentPuzzle);
+
         currentPuzzle.EndBatchUpdate();
     }
     private bool AnyCellsSelected(IPuzzle? currentPuzzle)
@@ -212,9 +214,7 @@ public class PuzzleCommandService : IPuzzleCommandService
         {
             currentPuzzle[row, column].Digit = 0;
             if (gameType == GameType.Create) currentPuzzle[row, column].IsGiven = false;
-            CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CenterCandidates, row, column, currentDigit);
-            CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CornerCandidates, row, column, currentDigit);
-            CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.SolverCandidates, row, column, currentDigit);
+            RestoreCandidatesInAllUnits(currentPuzzle, row, column, currentDigit);
         }
         else
         {
@@ -222,9 +222,7 @@ public class PuzzleCommandService : IPuzzleCommandService
             {
                 currentPuzzle[row, column].Digit = 0;
                 if (gameType == GameType.Create) currentPuzzle[row, column].IsGiven = false;
-                CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CenterCandidates, row, column, currentDigit);
-                CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CornerCandidates, row, column, currentDigit);
-                CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.SolverCandidates, row, column, currentDigit);
+                RestoreCandidatesInAllUnits(currentPuzzle, row, column, currentDigit);
             }
             else
             {
@@ -235,16 +233,21 @@ public class PuzzleCommandService : IPuzzleCommandService
 
                 // Clear all candidates in the current cell
                 CandidateManager.ClearAllCandidatesInCell(currentPuzzle, row, column);
+
                 RemoveSolverCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
                 RemoveCenterCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
                 RemoveCornerCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
 
-                CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CenterCandidates, row, column, currentDigit);
-                CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CornerCandidates, row, column, currentDigit);
-                CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.SolverCandidates, row, column, currentDigit);
+                RestoreCandidatesInAllUnits(currentPuzzle, row, column, currentDigit);
 
             }
         }
+    }
+    private void RestoreCandidatesInAllUnits(IPuzzle currentPuzzle, int row, int column, int currentDigit)
+    {
+        CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CenterCandidates, row, column, currentDigit);
+        CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CornerCandidates, row, column, currentDigit);
+        CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.SolverCandidates, row, column, currentDigit);
     }
     private void UpdateCandidate(IPuzzle? currentPuzzle, int row, int column, int digit, CandidateType type)
     {
