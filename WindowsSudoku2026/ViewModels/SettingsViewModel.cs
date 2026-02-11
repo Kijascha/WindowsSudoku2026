@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Options;
+using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Settings;
 using WindowsSudoku2026.Core.Interfaces;
 using WindowsSudoku2026.Core.ViewModels;
@@ -22,8 +23,13 @@ public partial class SettingsViewModel : ViewModel
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsDirty))]
     private string _defaultNamingPrefix;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsDirty))]
+    private CandidateHandlingMode _selectedCandidateConflictMode;
     public bool IsDirty =>
-        DefaultNamingPrefix != _originalSettings.DefaultNamingPrefix;
+        DefaultNamingPrefix != _originalSettings.DefaultNamingPrefix ||
+        SelectedCandidateConflictMode != _originalSettings.CandidateConflictMode;
+
     public SettingsViewModel(
         IAppPaths appPaths,
         IOptionsMonitor<UserSettings> userSettings,
@@ -37,32 +43,32 @@ public partial class SettingsViewModel : ViewModel
         _originalSettings = _userSettings.CurrentValue;
 
         _defaultNamingPrefix = _userSettings.CurrentValue.DefaultNamingPrefix;
+        _selectedCandidateConflictMode = _userSettings.CurrentValue.CandidateConflictMode;
     }
 
     partial void OnDefaultNamingPrefixChanged(string value)
     {
-
+        UpdateAllSettingsCommand.NotifyCanExecuteChanged();
+    }
+    partial void OnSelectedCandidateConflictModeChanged(CandidateHandlingMode value)
+    {
         UpdateAllSettingsCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand(CanExecute = nameof(IsDirty))]
     private void UpdateAllSettings()
     {
-        // 1. Neues Settings-Objekt zusammenbauen
         var updatedSettings = new UserSettings
         {
             DefaultNamingPrefix = DefaultNamingPrefix,
+            CandidateConflictMode = SelectedCandidateConflictMode,
             // ... alle weiteren Properties hier übernehmen
         };
 
-        // 2. Physisch speichern
-        //_settingsService.SaveSettings(updatedSettings);
         _settingsService.SaveSettings<UserSettings>(_appPaths.UserSettingsFile, "UserSettings", updatedSettings);
 
-        // 3. Den neuen Stand als "Original" festlegen -> Button verschwindet
         _originalSettings = updatedSettings;
 
-        // UI-Update erzwingen
         OnPropertyChanged(nameof(IsDirty));
         UpdateAllSettingsCommand.NotifyCanExecuteChanged();
     }
