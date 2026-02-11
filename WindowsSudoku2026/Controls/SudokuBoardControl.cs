@@ -286,6 +286,8 @@ public class SudokuBoardControl : Control
         DrawCornerMarks();
         if (GameMode == GameType.Create && IsSolverMode)
             DrawSolverMarks();
+        if (GameMode == GameType.Play)
+            DrawConflictHighlights();
         DrawDigits();
     }
     #endregion
@@ -297,8 +299,9 @@ public class SudokuBoardControl : Control
     private readonly DrawingVisual _selectionVisual = new DrawingVisual();
     private readonly DrawingVisual _centerMarksVisual = new DrawingVisual();
     private readonly DrawingVisual _cornerMarksVisual = new DrawingVisual();
-    private readonly DrawingVisual _solverMarksVisual = new DrawingVisual(); // just for creating puzzles and for testing
+    private readonly DrawingVisual _solverMarksVisual = new DrawingVisual();
     private readonly DrawingVisual _digitsVisual = new DrawingVisual();
+    private readonly DrawingVisual _conflictHighlightsVisual = new DrawingVisual();
 
     private void AddLayer(DrawingVisual visual, bool crisp = true)
     {
@@ -313,7 +316,7 @@ public class SudokuBoardControl : Control
         AddVisualChild(visual);
         AddLogicalChild(visual);
     }
-    protected override int VisualChildrenCount => 8;
+    protected override int VisualChildrenCount => 9;
 
     protected override Visual GetVisualChild(int index)
     {
@@ -326,7 +329,8 @@ public class SudokuBoardControl : Control
             4 => _cornerMarksVisual,
             5 => _solverMarksVisual,
             6 => _digitsVisual,
-            7 => _gridVisual,
+            7 => _conflictHighlightsVisual,
+            8 => _gridVisual,
             _ => throw new ArgumentOutOfRangeException(nameof(index))
         };
     }
@@ -354,6 +358,7 @@ public class SudokuBoardControl : Control
         AddLayer(_cornerMarksVisual);
         AddLayer(_solverMarksVisual);
         AddLayer(_digitsVisual);
+        AddLayer(_conflictHighlightsVisual);
         AddLayer(_gridVisual);
 
 
@@ -749,6 +754,22 @@ public class SudokuBoardControl : Control
                     fontSize,
                     CenterMarkBrush,
                     1.0);
+
+                // --- EINZELNE ZEICHEN EINFÄRBEN ---
+                for (int i = 0; i < text.Length; i++)
+                {
+                    // Extrahiere die Ziffer an Position i
+                    if (int.TryParse(text[i].ToString(), out int digit))
+                    {
+                        // Prüfen, ob genau diese Ziffer in dieser Zelle ein Konflikt ist
+                        if (Puzzle[r, c].ConflictedCandidates.Contains(digit))
+                        {
+                            // Färbe nur dieses eine Zeichen rot
+                            ft.SetForegroundBrush(Brushes.DarkRed, i, 1);
+                        }
+                    }
+                }
+                // ----------------------------------
                 // zentriert
                 double x = c * _cellSize + (_cellSize - ft.Width) / 2;
 
@@ -807,13 +828,19 @@ public class SudokuBoardControl : Control
 
                     string text = value.ToString();
 
+                    Brush brush = CenterMarkBrush;
+                    if (Puzzle[r, c].ConflictedCandidates.Contains(value))
+                    {
+                        brush = Brushes.DarkRed;
+                    }
+
                     var ft = new FormattedText(
                         text,
                         System.Globalization.CultureInfo.CurrentUICulture,
                         FlowDirection.LeftToRight,
                         new Typeface("Segoe UI"),
                         fontSize,
-                        CenterMarkBrush,
+                        brush,
                         1.0);
 
                     double cellX = c * _cellSize;
@@ -909,6 +936,28 @@ public class SudokuBoardControl : Control
             }
         }
     }
+    private void DrawConflictHighlights()
+    {
+        using var dc = _conflictHighlightsVisual.RenderOpen();
+
+        if (Puzzle == null) return;
+
+        for (int r = 0; r < IPuzzle.Size; r++)
+        {
+            for (int c = 0; c < IPuzzle.Size; c++)
+            {
+                if (Puzzle[r, c].Digit == 0) continue;
+                if (!Puzzle[r, c].IsConflicting) continue;
+
+                double x = c * _cellSize;
+                double y = r * _cellSize;
+
+                Color bgColor = Colors.DarkRed;
+                Color transparentColor = Color.FromArgb(128, bgColor.R, bgColor.G, bgColor.B);
+                dc.DrawRectangle(new SolidColorBrush(transparentColor), null, new Rect(x, y, _cellSize, _cellSize));
+            }
+        }
+    }
     private double GetCornerFontSize()
     {
         return _cellSize * 0.3;
@@ -922,7 +971,7 @@ public class SudokuBoardControl : Control
             return baseSize * 0.8;
         return baseSize * 0.6;
     }
-    private string GetCandidateString(int mask)
+    private static string GetCandidateString(int mask)
     {
         char[] chars = new char[9];
         int count = 0;
@@ -935,7 +984,7 @@ public class SudokuBoardControl : Control
         }
         return new string(chars, 0, count);
     }
-    private int GetCandidates(int mask, Span<int> output)
+    private static int GetCandidates(int mask, Span<int> output)
     {
         int count = 0;
         for (int i = 0; i < 9; i++)
@@ -944,21 +993,6 @@ public class SudokuBoardControl : Control
                 output[count++] = i + 1;
         }
         return count;
-    }
-    private FormattedText[] _cornerTexts = new FormattedText[9];
-    private void EnsureFormattedTexts(double fontSize)
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            _cornerTexts[i] = new FormattedText(
-                (i + 1).ToString(),
-                System.Globalization.CultureInfo.CurrentUICulture,
-                FlowDirection.LeftToRight,
-                new Typeface("Segoe UI"),
-                fontSize,
-                CenterMarkBrush,
-                1.0);
-        }
     }
     private TransformedBitmap? GeneratePreview()
     {
