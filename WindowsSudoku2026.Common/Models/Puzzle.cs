@@ -192,15 +192,15 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
     #region Converting and Copying
     public Puzzle Clone()
     {
-        // ID übernehmen!
+        // Copy basic properties (ID, Name, PreviewImage, ActivePalette)
         var clone = new Puzzle(Id)
         {
             Name = Name,
             PreviewImage = PreviewImage,
-            ActivePalette = ActivePalette// falls Clone existiert
+            ActivePalette = ActivePalette
         };
 
-        // Lösung kopieren
+        // Copy Solution
         for (int r = 0; r < Size; r++)
         {
             for (int c = 0; c < Size; c++)
@@ -208,31 +208,12 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
                 clone.Solution[r, c] = Solution[r, c];
             }
         }
-
+        // Clone the board cells (deep copy)
         for (int row = 0; row < Size; row++)
         {
             for (int col = 0; col < Size; col++)
             {
-                Cell original = _board[row, col];
-                Cell copy = new Cell(row, col)
-                {
-                    Digit = original.Digit,
-
-                    SolverCandidates = new(original.SolverCandidates.BitMask),
-                    CenterCandidates = new(original.CenterCandidates.BitMask),
-                    CornerCandidates = new(original.CornerCandidates.BitMask),
-
-                    IsGiven = original.IsGiven,
-                    IsSelected = original.IsSelected,
-                    IsHighlighted = original.IsHighlighted,
-                    IsConflicting = original.IsConflicting
-                };
-
-                // Farben kopieren
-                foreach (var color in original.CellColors)
-                    copy.CellColors.Add(color);
-
-                clone._board[row, col] = copy;
+                clone._board[row, col] = (Cell)_board[row, col].Clone();
             }
         }
 
@@ -240,17 +221,17 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
     }
     public Puzzle CreateInitialStateCopy()
     {
-        // ID und Metadaten übernehmen
+        // Copy basic properties (ID, Name, PreviewImage, ActivePalette) and reset state data
         var reset = new Puzzle(Id)
         {
             Name = Name,
             PreviewImage = PreviewImage,
             ActivePalette = ActivePalette,
-            IsSolved = false,           // Zwingend auf false setzen
-            TimeSpent = TimeSpan.Zero          // Zeit auf 0 setzen
+            IsSolved = false,
+            TimeSpent = TimeSpan.Zero
         };
 
-        // Lösung kopieren (bleibt identisch)
+        // Copy Solution
         for (int r = 0; r < Size; r++)
         {
             for (int c = 0; c < Size; c++)
@@ -259,35 +240,12 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
             }
         }
 
+        // Clone the board cells but reset their state (deep copy with initial state)
         for (int row = 0; row < Size; row++)
         {
             for (int col = 0; col < Size; col++)
             {
-                Cell original = _board[row, col];
-
-                // Neue Cell erstellen
-                Cell copy = new Cell(row, col)
-                {
-                    IsGiven = original.IsGiven,
-
-                    // NUR die Digit übernehmen, wenn sie ein 'Given' ist
-                    Digit = original.IsGiven ? original.Digit : 0,
-
-                    // Kandidaten/Marks werden NICHT übernommen (leerer Zustand)
-                    SolverCandidates = original.IsGiven ? new(original.SolverCandidates.BitMask) : new(),
-                    CenterCandidates = new(0),
-                    CornerCandidates = new(0),
-
-                    // Status-Flags zurücksetzen
-                    IsSelected = false,
-                    IsHighlighted = false,
-                    IsConflicting = false
-                };
-
-                // Farben nur übernehmen, wenn sie zum Initial-Design gehören (meist leer)
-                // Falls du Farben als User-Markierung nutzt, hier .Clear() lassen
-
-                reset._board[row, col] = copy;
+                reset._board[row, col] = (Cell)_board[row, col].CreateInitialStateClone();
             }
         }
 

@@ -4,7 +4,7 @@ using WindowsSudoku2026.Common.Enums;
 
 namespace WindowsSudoku2026.Common.Models;
 
-public partial class Cell : ObservableObject
+public partial class Cell : ObservableObject, ICloneable
 {
     public int Row { get; init; }
     public int Column { get; init; }
@@ -42,6 +42,39 @@ public partial class Cell : ObservableObject
 
     public override int GetHashCode()
         => HashCode.Combine(Row, Column);
+
+    public object Clone()
+    {
+        return new Cell(Row, Column)
+        {
+            Digit = Digit,
+            IsGiven = IsGiven,
+            IsSelected = IsSelected,
+            IsConflicting = IsConflicting,
+            IsHighlighted = IsHighlighted,
+            SolverCandidates = new Candidates(SolverCandidates.BitMask),
+            CornerCandidates = new Candidates(CornerCandidates.BitMask),
+            CenterCandidates = new Candidates(CenterCandidates.BitMask),
+            ConflictedCandidates = new Candidates(ConflictedCandidates.BitMask),
+            CellColors = [.. CellColors]
+        };
+    }
+    public object CreateInitialStateClone()
+    {
+        return new Cell(Row, Column)
+        {
+            Digit = IsGiven ? Digit : 0,
+            IsGiven = IsGiven,
+            IsSelected = false,
+            IsConflicting = false,
+            IsHighlighted = false,
+            SolverCandidates = IsGiven ? new(SolverCandidates.BitMask) : new(),
+            CornerCandidates = new(0),
+            CenterCandidates = new(0),
+            ConflictedCandidates = new(0),
+            CellColors = []
+        };
+    }
 
     public static bool operator ==(Cell? a, Cell? b) => Equals(a, b);
     public static bool operator !=(Cell? a, Cell? b) => !Equals(a, b);
