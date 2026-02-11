@@ -6,8 +6,8 @@ namespace WindowsSudoku2026.Common.Models;
 
 public partial class Cell : ObservableObject
 {
-    public int Row { get; set; }
-    public int Column { get; set; }
+    public int Row { get; init; }
+    public int Column { get; init; }
     [ObservableProperty] private int _digit;
     [ObservableProperty] private bool _isGiven;
     [ObservableProperty] private bool _isSelected;
@@ -16,14 +16,19 @@ public partial class Cell : ObservableObject
     [ObservableProperty] private Candidates _solverCandidates = new();
     [ObservableProperty] private Candidates _cornerCandidates = new();
     [ObservableProperty] private Candidates _centerCandidates = new();
+    [ObservableProperty] private Candidates _conflictedCandidates = new();
     [ObservableProperty] private ObservableCollection<SudokuCellColor> _cellColors;
 
-    public Cell()
+    public Cell(int row, int column)
     {
+        Row = row;
+        Column = column;
         _cornerCandidates = new();
         _centerCandidates = new();
+        _conflictedCandidates = new Candidates();
         _cornerCandidates.Clear();
         _centerCandidates.Clear();
+        _conflictedCandidates.Clear();
         _digit = 0;
         _isGiven = false;
         _isSelected = false;

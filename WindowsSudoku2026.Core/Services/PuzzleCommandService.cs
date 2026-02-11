@@ -1,12 +1,16 @@
-﻿using WindowsSudoku2026.Common.Enums;
+﻿using Microsoft.Extensions.Options;
+using WindowsSudoku2026.Common.Enums;
 using WindowsSudoku2026.Common.Models;
+using WindowsSudoku2026.Common.Settings;
 using WindowsSudoku2026.Common.Utils;
 using WindowsSudoku2026.Core.Interfaces;
 
 namespace WindowsSudoku2026.Core.Services;
 
-public class PuzzleCommandService : IPuzzleCommandService
+public class PuzzleCommandService(IOptionsMonitor<UserSettings> userOptions) : IPuzzleCommandService
 {
+    private readonly IOptionsMonitor<UserSettings> _userOptions = userOptions;
+
     #region Public Update Methods
     public void UpdateColors(IPuzzle? currentPuzzle, int colorCode)
     {
@@ -180,11 +184,16 @@ public class PuzzleCommandService : IPuzzleCommandService
             }
         }
 
-        SudokuValidationService.ValidateMove(currentPuzzle);
+        SudokuValidationService.ValidateDigits(currentPuzzle);
+
+        if (_userOptions.CurrentValue.CandidateConflictMode == CandidateHandlingMode.HighlightConflicts)
+            SudokuValidationService.ValidateCandidates(currentPuzzle);
+        else
+            SudokuValidationService.ClearConflicts(currentPuzzle);
 
         currentPuzzle.EndBatchUpdate();
     }
-    private bool AnyCellsSelected(IPuzzle? currentPuzzle)
+    private static bool AnyCellsSelected(IPuzzle? currentPuzzle)
     {
         if (currentPuzzle == null) return false;
 
@@ -234,9 +243,13 @@ public class PuzzleCommandService : IPuzzleCommandService
                 // Clear all candidates in the current cell
                 CandidateManager.ClearAllCandidatesInCell(currentPuzzle, row, column);
 
+                if (_userOptions.CurrentValue.CandidateConflictMode == CandidateHandlingMode.AutoRemoval)
+                {
+                    RemoveCenterCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
+                    RemoveCornerCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
+                }
+
                 RemoveSolverCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
-                RemoveCenterCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
-                RemoveCornerCandidatesInRelatedUnits(currentPuzzle, row, column, digit);
 
                 RestoreCandidatesInAllUnits(currentPuzzle, row, column, currentDigit);
 
@@ -245,8 +258,11 @@ public class PuzzleCommandService : IPuzzleCommandService
     }
     private void RestoreCandidatesInAllUnits(IPuzzle currentPuzzle, int row, int column, int currentDigit)
     {
-        CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CenterCandidates, row, column, currentDigit);
-        CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CornerCandidates, row, column, currentDigit);
+        if (_userOptions.CurrentValue.CandidateConflictMode == CandidateHandlingMode.AutoRemoval)
+        {
+            CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CenterCandidates, row, column, currentDigit);
+            CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.CornerCandidates, row, column, currentDigit);
+        }
         CandidateManager.RestoreCandidates(currentPuzzle, CandidateType.SolverCandidates, row, column, currentDigit);
     }
     private void UpdateCandidate(IPuzzle? currentPuzzle, int row, int column, int digit, CandidateType type)
@@ -294,34 +310,20 @@ public class PuzzleCommandService : IPuzzleCommandService
         }
     }
     private void RemoveSolverCandidatesInRelatedUnits(IPuzzle? currentPuzzle, int row, int column, int digit)
-    {
-        if (currentPuzzle == null) return;
-        int boxRow = row / 3;
-        int boxCol = column / 3;
-        int boxIndex = boxRow * 3 + boxCol;
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Row, CandidateType.SolverCandidates, row, (row, column), digit);
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Column, CandidateType.SolverCandidates, column, (row, column), digit);
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Box, CandidateType.SolverCandidates, boxIndex, (row, column), digit);
-    }
+        => RemoveCandidatesInRelatedUnits(currentPuzzle, CandidateType.SolverCandidates, row, column, digit);
     private void RemoveCenterCandidatesInRelatedUnits(IPuzzle? currentPuzzle, int row, int column, int digit)
-    {
-        if (currentPuzzle == null) return;
-        int boxRow = row / 3;
-        int boxCol = column / 3;
-        int boxIndex = boxRow * 3 + boxCol;
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Row, CandidateType.CenterCandidates, row, (row, column), digit);
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Column, CandidateType.CenterCandidates, column, (row, column), digit);
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Box, CandidateType.CenterCandidates, boxIndex, (row, column), digit);
-    }
+        => RemoveCandidatesInRelatedUnits(currentPuzzle, CandidateType.CenterCandidates, row, column, digit);
     private void RemoveCornerCandidatesInRelatedUnits(IPuzzle? currentPuzzle, int row, int column, int digit)
+        => RemoveCandidatesInRelatedUnits(currentPuzzle, CandidateType.CornerCandidates, row, column, digit);
+    private void RemoveCandidatesInRelatedUnits(IPuzzle? currentPuzzle, CandidateType candidateType, int row, int column, int digit)
     {
         if (currentPuzzle == null) return;
         int boxRow = row / 3;
         int boxCol = column / 3;
         int boxIndex = boxRow * 3 + boxCol;
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Row, CandidateType.CornerCandidates, row, (row, column), digit);
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Column, CandidateType.CornerCandidates, column, (row, column), digit);
-        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Box, CandidateType.CornerCandidates, boxIndex, (row, column), digit);
+        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Row, candidateType, row, (row, column), digit);
+        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Column, candidateType, column, (row, column), digit);
+        CandidateManager.RemoveCandidatesInUnit(currentPuzzle, UnitType.Box, candidateType, boxIndex, (row, column), digit);
     }
     #endregion
 }
