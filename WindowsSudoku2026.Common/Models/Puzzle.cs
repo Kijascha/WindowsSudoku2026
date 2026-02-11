@@ -79,7 +79,7 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
         {
             for (int col = 0; col < Size; col++)
             {
-                _board[row, col] = new Cell { Row = row, Column = col };
+                _board[row, col] = new Cell(row, col);
                 Solution[row, col] = 0;
             }
         }
@@ -97,7 +97,7 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
         {
             for (int col = 0; col < Size; col++)
             {
-                _board[row, col] = new Cell { Row = row, Column = col };
+                _board[row, col] = new Cell(row, col);
                 Solution[row, col] = 0;
             }
         }
@@ -214,10 +214,8 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
             for (int col = 0; col < Size; col++)
             {
                 Cell original = _board[row, col];
-                Cell copy = new Cell
+                Cell copy = new Cell(row, col)
                 {
-                    Row = original.Row,
-                    Column = original.Column,
                     Digit = original.Digit,
 
                     SolverCandidates = new(original.SolverCandidates.BitMask),
@@ -268,10 +266,8 @@ public class Puzzle : IPuzzle, INotifyPropertyChanged
                 Cell original = _board[row, col];
 
                 // Neue Cell erstellen
-                Cell copy = new Cell
+                Cell copy = new Cell(row, col)
                 {
-                    Row = original.Row,
-                    Column = original.Column,
                     IsGiven = original.IsGiven,
 
                     // NUR die Digit übernehmen, wenn sie ein 'Given' ist
