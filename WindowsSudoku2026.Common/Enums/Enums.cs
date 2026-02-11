@@ -64,3 +64,10 @@ public enum SudokuCellColor
     Color8,
     Color9
 }
+
+public enum CandidateHandlingMode
+{
+    None,
+    AutoRemoval,
+    HighlightConflicts
+}
