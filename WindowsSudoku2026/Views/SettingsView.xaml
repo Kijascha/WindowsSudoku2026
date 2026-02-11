@@ -3,12 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:WindowsSudoku2026.Views" 
+             xmlns:local="clr-namespace:WindowsSudoku2026.Views"             
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:enums="clr-namespace:WindowsSudoku2026.Common.Enums;assembly=WindowsSudoku2026.Common"
              xmlns:components="clr-namespace:WindowsSudoku2026.Components"
              xmlns:viewmodels="clr-namespace:WindowsSudoku2026.ViewModels" 
              d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!-- Namespace für dein Enum einbinden (z.B. xmlns:common="clr-namespace:MySudoku.Common") -->
+        <ObjectDataProvider x:Key="CandidateConflictModes"
+                        MethodName="GetValues" 
+                        ObjectType="{x:Type system:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:CandidateHandlingMode"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -108,8 +120,10 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Content="Setting #1" FontSize="18"/>
-                            <ToggleButton Grid.Column="1" Style="{StaticResource DefaultToggleSwitch}" Margin="0 3 30 0" VerticalAlignment="Center"/>
+                            <Label Grid.Column="0" Content="Candidate Conflict Mode" FontSize="18"/>
+                            <ComboBox Grid.Column="1" Width="175" 
+                                      ItemsSource="{Binding Source={StaticResource CandidateConflictModes}}"
+                                      SelectedItem="{Binding Path=SelectedCandidateConflictMode, Mode=TwoWay}"/>
                         </Grid>
                         <Grid Margin="30 10">
                             <Grid.ColumnDefinitions>
